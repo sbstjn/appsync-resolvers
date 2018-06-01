@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: /go/src/github.com/sbstjn/appsync-router
   docker:
-    - image: circleci/golang:latest
+    - image: circleci/golang:1.8
 
 version: 2
 
@@ -54,11 +54,6 @@ jobs:
           paths:
             - .
 
-      - run:
-          name: Install coveralls
-          command: go get github.com/mattn/goveralls
-
-
   coverage:
     <<: *defaults
 
@@ -86,7 +81,6 @@ workflows:
       - coverage:
           require:
             - coverage
-
   release:
     jobs:
       - checkout:

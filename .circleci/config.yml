@@ -79,7 +79,7 @@ workflows:
           requires:
             - checkout
       - coverage:
-          require:
+          requires:
             - coverage
   release:
     jobs:

@@ -80,7 +80,7 @@ workflows:
             - checkout
       - coverage:
           requires:
-            - coverage
+            - test
   release:
     jobs:
       - checkout:

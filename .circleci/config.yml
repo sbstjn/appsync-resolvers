@@ -31,12 +31,13 @@ jobs:
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "Gopkg.toml" }}
           paths:
-            - "vendor"
+            - vendor
 
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - *
+            - *.*
 
   test:
     <<: *defaults
@@ -52,7 +53,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - coverage.out
 
   coverage:
     <<: *defaults

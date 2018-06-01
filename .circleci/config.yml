@@ -72,7 +72,7 @@ jobs:
 
       - run:
           name: Update Coveralls.io
-          command: goveralls -coverprofile=coverage.out -service=circle-ci -repotoken=$COVERALLS_TOKEN
+          command: make coveralls
 
 workflows:
   version: 2

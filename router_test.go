@@ -3,6 +3,7 @@ package router_test
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"testing"
 
@@ -10,12 +11,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func handleRouteA(req json.RawMessage) (interface{}, error) {
-	return nil, errors.New("Nothing here in route A")
+type ParamsRouteA struct {
+	Foo string `json:"foo"`
 }
 
-func handleRouteB(req json.RawMessage) (interface{}, error) {
-	return nil, errors.New("Nothing here in route B")
+type ParamsRouteB struct {
+	Bar string `json:"bar"`
+}
+
+func handleRouteA(args ParamsRouteA) (interface{}, error) {
+	return nil, fmt.Errorf("Nothing here in route A: %s", args.Foo)
+}
+
+func handleRouteB(args ParamsRouteB) (interface{}, error) {
+	return nil, fmt.Errorf("Nothing here in route B: %s", args.Bar)
 }
 
 var (
@@ -29,22 +38,29 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestRouteMustBeFunction(t *testing.T) {
+	err := r.Add("fieldD", true)
+
+	assert.NotNil(t, err)
+	assert.Equal(t, errors.New("Handler is not a function, but bool"), err)
+}
+
 func TestRouteMatch(t *testing.T) {
 	routeA, err := r.Serve(router.Request{
 		Field:     "fieldA",
-		Arguments: json.RawMessage(""),
+		Arguments: json.RawMessage("{\"foo\":\"bar\"}"),
 	})
 
 	assert.Nil(t, routeA)
-	assert.Equal(t, errors.New("Nothing here in route A"), err)
+	assert.Equal(t, errors.New("Nothing here in route A: bar"), err)
 
 	routeB, err := r.Serve(router.Request{
 		Field:     "fieldB",
-		Arguments: json.RawMessage(""),
+		Arguments: json.RawMessage("{\"bar\":\"foo\"}"),
 	})
 
 	assert.Nil(t, routeB)
-	assert.Equal(t, errors.New("Nothing here in route B"), err)
+	assert.Equal(t, errors.New("Nothing here in route B: foo"), err)
 }
 
 func TestRouteMiss(t *testing.T) {
@@ -54,5 +70,5 @@ func TestRouteMiss(t *testing.T) {
 	})
 
 	assert.Nil(t, routeC)
-	assert.Equal(t, errors.New("Unable to handle request: fieldC"), err)
+	assert.Equal(t, errors.New("No handler for request found: fieldC"), err)
 }

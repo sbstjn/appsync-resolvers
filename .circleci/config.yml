@@ -36,8 +36,9 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - '*.*'
-            - 'vendor'
+            - "Makefile"
+            - "vendor"
+            - "*.go"
 
   test:
     <<: *defaults

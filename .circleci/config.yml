@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: /go/src/github.com/sbstjn/appsync-router
   docker:
-    - image: circleci/golang:1.10
+    - image: jimdo/golang-dep
 
 version: 2
 
@@ -24,9 +24,7 @@ jobs:
 
       - run:
           name: Install dependencies
-          command: |
-            go get -u github.com/golang/dep/...
-            dep ensure
+          command: dep ensure
 
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "Gopkg.toml" }}
@@ -38,7 +36,7 @@ jobs:
           paths:
             - Makefile
             - vendor
-            - \*.go
+            - "*.go"
 
   test:
     <<: *defaults

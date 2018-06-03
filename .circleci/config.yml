@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: /go/src/github.com/sbstjn/appsync-router
   docker:
-    - image: circleci/golang:1.8
+    - image: circleci/golang:1.10
 
 version: 2
 

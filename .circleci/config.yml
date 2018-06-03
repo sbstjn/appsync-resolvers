@@ -62,10 +62,6 @@ jobs:
           at: .
 
       - run:
-          name: Install goveralls
-          command: go get github.com/mattn/goveralls
-
-      - run:
           name: Update Coveralls.io
           command: make coveralls
 

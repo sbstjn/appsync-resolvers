@@ -42,6 +42,7 @@ jobs:
             - Makefile
             - vendor
             - "*.go"
+            - .git
 
   test:
     <<: *defaults

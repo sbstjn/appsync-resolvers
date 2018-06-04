@@ -1,3 +1,4 @@
+version: "2"
 plugins:
   gofmt:
     enabled: true
@@ -5,3 +6,6 @@ plugins:
     enabled: true
   govet:
     enabled: true
+exclude_patterns:
+  - "**/*.*"
+  - "!*.go"

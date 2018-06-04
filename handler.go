@@ -12,19 +12,19 @@ type Handler struct {
 
 // Prepare parses event payload
 func (h *Handler) Prepare(payload json.RawMessage) ([]reflect.Value, error) {
-	paramType := reflect.TypeOf(h.function).In(0)
-	param := reflect.New(paramType)
+	argsType := reflect.TypeOf(h.function).In(0)
+	args := reflect.New(argsType)
 
-	if err := json.Unmarshal(payload, param.Interface()); err != nil {
+	if err := json.Unmarshal(payload, args.Interface()); err != nil {
 		return nil, err
 	}
 
-	return append([]reflect.Value{}, param.Elem()), nil
+	return append([]reflect.Value{}, args.Elem()), nil
 }
 
 // Call the handler and pass event
-func (h *Handler) Call(in []reflect.Value) (interface{}, error) {
-	response := reflect.ValueOf(h.function).Call(in)
+func (h *Handler) Call(args []reflect.Value) (interface{}, error) {
+	response := reflect.ValueOf(h.function).Call(args)
 
 	return response[0].Interface(), response[1].Interface().(error)
 }

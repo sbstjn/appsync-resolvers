@@ -1,10 +1,11 @@
 # AppSync Router
 
 [![GitHub release](https://img.shields.io/github/release/sbstjn/appsync-router.svg?maxAge=600)](https://github.com/sbstjn/appsync-router/releases)
+[![MIT License](https://img.shields.io/github/license/sbstjn/appsync-router.svg?maxAge=3600)](https://github.com/sbstjn/appsync-router/blob/master/LICENSE.md)
 [![GoDoc](https://godoc.org/github.com/sbstjn/appsync-router?status.svg)](https://godoc.org/github.com/sbstjn/appsync-router)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sbstjn/appsync-router)](https://goreportcard.com/report/github.com/sbstjn/appsync-router)
-[![MIT License](https://img.shields.io/github/license/sbstjn/appsync-router.svg?maxAge=3600)](https://github.com/sbstjn/appsync-router/blob/master/LICENSE.md)
 [![Build Status](https://img.shields.io/circleci/project/sbstjn/appsync-router.svg?maxAge=600)](https://circleci.com/gh/sbstjn/appsync-router)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ae56f89b122d14b9749e/test_coverage)](https://codeclimate.com/github/sbstjn/appsync-router/test_coverage)
 
 Wrapper for routing AppSync resolvers with AWS Lambda using Go.
 

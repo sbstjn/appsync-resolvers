@@ -44,7 +44,7 @@ func TestRouteMustBeFunction(t *testing.T) {
 	assert.Equal(t, "Handler is not a function, but bool", err.Error())
 }
 
-func TestRouteMatch(t *testing.T) {
+func TestRouteMatchA(t *testing.T) {
 	routeA, err := r.Serve(router.Request{
 		Field:     "fieldA",
 		Arguments: json.RawMessage("{\"foo\":\"bar\"}"),
@@ -52,7 +52,9 @@ func TestRouteMatch(t *testing.T) {
 
 	assert.Nil(t, routeA)
 	assert.Equal(t, "Nothing here in route A: bar", err.Error())
+}
 
+func TestRouteMatchB(t *testing.T) {
 	routeB, err := r.Serve(router.Request{
 		Field:     "fieldB",
 		Arguments: json.RawMessage("{\"bar\":\"foo\"}"),

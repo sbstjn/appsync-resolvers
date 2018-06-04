@@ -26,6 +26,10 @@ jobs:
           name: Install dependencies
           command: dep ensure
 
+      - run:
+          name: Install CodeClimate CLI
+          command: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter && chmod +x ./cc-test-reporter
+
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "Gopkg.toml" }}
           paths:
@@ -34,6 +38,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
+            - cc-test-reporter
             - Makefile
             - vendor
             - "*.go"
@@ -46,13 +51,17 @@ jobs:
           at: .
 
       - run:
+          name: Notify CodeClimate about pending report
+          command: ./cc-test-reporter before-build
+
+      - run:
           name: Run tests
           command: make test
 
       - persist_to_workspace:
           root: .
           paths:
-            - coverage.out
+            - c.out
 
   coverage:
     <<: *defaults
@@ -62,8 +71,8 @@ jobs:
           at: .
 
       - run:
-          name: Update Coveralls.io
-          command: make coveralls
+          name: Update CodeClimate with coverage report
+          command: ./cc-test-reporter after-build
 
 workflows:
   version: 2

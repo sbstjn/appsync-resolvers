@@ -7,5 +7,6 @@ plugins:
   govet:
     enabled: true
 exclude_patterns:
+  - "**/*"
   - "**/*.*"
   - "!*.go"

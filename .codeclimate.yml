@@ -7,8 +7,16 @@ plugins:
   govet:
     enabled: true
 exclude_patterns:
-  - "**/*"
-  - "**/.*"
-  - "**/*.*"
-  - "!**/*.go"
-  - "**/*_test.go"
+  - ".circleci"
+  - ".git"
+  - ".gitignore"
+  - ".codeclimate.yml"
+  - "c.out"
+  - "coverage"
+  - "CODE_OF_CONDUCT.md"
+  - "Gopkg.lock"
+  - "Gopkg.toml"
+  - "LICENSE.md"
+  - "Makefile"
+  - "README.md"
+  - "vendor"

@@ -9,4 +9,5 @@ plugins:
 exclude_patterns:
   - "**/*"
   - "**/*.*"
-  - "!*.go"
+  - "!**/*.go"
+  - "**/*_test.go"

@@ -1,11 +1,10 @@
 # AppSync Router
 
-[![Build Status](https://img.shields.io/circleci/project/sbstjn/appsync-router.svg?maxAge=600)](https://circleci.com/gh/sbstjn/appsync-router)
 [![GitHub release](https://img.shields.io/github/release/sbstjn/appsync-router.svg?maxAge=600)](https://github.com/sbstjn/appsync-router/releases)
-[![MIT License](https://img.shields.io/github/license/sbstjn/appsync-router.svg?maxAge=3600)](https://github.com/sbstjn/appsync-router/blob/master/LICENSE.md)
 [![GoDoc](https://godoc.org/github.com/sbstjn/appsync-router?status.svg)](https://godoc.org/github.com/sbstjn/appsync-router)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sbstjn/appsync-router)](https://goreportcard.com/report/github.com/sbstjn/appsync-router)
-[![Coverage Status](https://img.shields.io/coveralls/sbstjn/appsync-router.svg?maxAge=600)](https://coveralls.io/github/sbstjn/appsync-router)
+[![MIT License](https://img.shields.io/github/license/sbstjn/appsync-router.svg?maxAge=3600)](https://github.com/sbstjn/appsync-router/blob/master/LICENSE.md)
+[![Build Status](https://img.shields.io/circleci/project/sbstjn/appsync-router.svg?maxAge=600)](https://circleci.com/gh/sbstjn/appsync-router)
 
 Wrapper for routing AppSync resolvers with AWS Lambda using Go.
 
@@ -24,12 +23,20 @@ import (
   "github.com/sbstjn/appsync-router"
 )
 
-func handleRouteA(req json.RawMessage) (interface{}, error) {
-	return nil, errors.New("Nothing here in route A")
+type ParamsRouteA struct {
+	Foo string `json:"foo"`
 }
 
-func handleRouteB(req json.RawMessage) (interface{}, error) {
-	return nil, errors.New("Nothing here in route B")
+type ParamsRouteB struct {
+	Bar string `json:"bar"`
+}
+
+func handleRouteA(args ParamsRouteA) (interface{}, error) {
+	return nil, fmt.Errorf("Nothing here in route A: %s", args.Foo)
+}
+
+func handleRouteB(args ParamsRouteB) (interface{}, error) {
+	return nil, fmt.Errorf("Nothing here in route B: %s", args.Bar)
 }
 
 var (

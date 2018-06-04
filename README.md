@@ -24,12 +24,20 @@ import (
   "github.com/sbstjn/appsync-router"
 )
 
-func handleRouteA(req json.RawMessage) (interface{}, error) {
-	return nil, errors.New("Nothing here in route A")
+type ParamsRouteA struct {
+	Foo string `json:"foo"`
 }
 
-func handleRouteB(req json.RawMessage) (interface{}, error) {
-	return nil, errors.New("Nothing here in route B")
+type ParamsRouteB struct {
+	Bar string `json:"bar"`
+}
+
+func handleRouteA(args ParamsRouteA) (interface{}, error) {
+	return nil, fmt.Errorf("Nothing here in route A: %s", args.Foo)
+}
+
+func handleRouteB(args ParamsRouteB) (interface{}, error) {
+	return nil, fmt.Errorf("Nothing here in route B: %s", args.Bar)
 }
 
 var (

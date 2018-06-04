@@ -2,7 +2,6 @@ package router_test
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -42,7 +41,7 @@ func TestRouteMustBeFunction(t *testing.T) {
 	err := r.Add("fieldD", true)
 
 	assert.NotNil(t, err)
-	assert.Equal(t, errors.New("Handler is not a function, but bool"), err)
+	assert.Equal(t, "Handler is not a function, but bool", err.Error())
 }
 
 func TestRouteMatch(t *testing.T) {
@@ -52,7 +51,7 @@ func TestRouteMatch(t *testing.T) {
 	})
 
 	assert.Nil(t, routeA)
-	assert.Equal(t, errors.New("Nothing here in route A: bar"), err)
+	assert.Equal(t, "Nothing here in route A: bar", err.Error())
 
 	routeB, err := r.Serve(router.Request{
 		Field:     "fieldB",
@@ -60,7 +59,7 @@ func TestRouteMatch(t *testing.T) {
 	})
 
 	assert.Nil(t, routeB)
-	assert.Equal(t, errors.New("Nothing here in route B: foo"), err)
+	assert.Equal(t, "Nothing here in route B: foo", err.Error())
 }
 
 func TestRouteMiss(t *testing.T) {
@@ -70,5 +69,15 @@ func TestRouteMiss(t *testing.T) {
 	})
 
 	assert.Nil(t, routeC)
-	assert.Equal(t, errors.New("No handler for request found: fieldC"), err)
+	assert.Equal(t, "No handler for request found: fieldC", err.Error())
+}
+
+func TestRouteMatchWithInvalidPayload(t *testing.T) {
+	routeA, err := r.Serve(router.Request{
+		Field:     "fieldA",
+		Arguments: json.RawMessage(""),
+	})
+
+	assert.Nil(t, routeA)
+	assert.Equal(t, "unexpected end of JSON input", err.Error())
 }

@@ -13,35 +13,44 @@ type Request struct {
 }
 
 // Router stores all routes and handlers
-type Router struct {
-	Routes map[string]Handler
-}
+type Router map[string]Handler
 
 // Add stores a new route with handler
-func (r *Router) Add(route string, function interface{}) error {
+func (r Router) Add(route string, function interface{}) error {
 	if kind := reflect.TypeOf(function).Kind(); kind != reflect.Func {
 		return fmt.Errorf("Handler is not a function, but %s", kind)
 	}
 
-	r.Routes[route] = Handler{function}
+	r[route] = Handler{function}
 	return nil
 }
 
-// Serve parses the AppSync request
-func (r *Router) Serve(req Request) (interface{}, error) {
-	if handler, found := r.Routes[req.Field]; found {
-		args, err := handler.Prepare(req.Arguments)
-		if err != nil {
-			return nil, err
-		}
-
-		return handler.Call(args)
+// Get return handler for route or error
+func (r Router) Get(route string) (*Handler, error) {
+	handler, found := r[route]
+	if !found {
+		return nil, fmt.Errorf("No handler for request found: %s", route)
 	}
 
-	return nil, fmt.Errorf("No handler for request found: %s", req.Field)
+	return &handler, nil
+}
+
+// Serve parses the AppSync request
+func (r Router) Serve(req Request) (interface{}, error) {
+	handler, err := r.Get(req.Field)
+	if err != nil {
+		return nil, err
+	}
+
+	arguments, err := handler.Prepare(req.Arguments)
+	if err != nil {
+		return nil, err
+	}
+
+	return handler.Call(arguments)
 }
 
 // New returns a new Router
 func New() Router {
-	return Router{map[string]Handler{}}
+	return Router{}
 }

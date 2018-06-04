@@ -8,6 +8,7 @@ plugins:
     enabled: true
 exclude_patterns:
   - "**/*"
+  - "**/.*"
   - "**/*.*"
   - "!**/*.go"
   - "**/*_test.go"

@@ -2,6 +2,7 @@ package router_test
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -37,6 +38,26 @@ func handleRouteEmpty(args ParamsRouteEmpty) (interface{}, error) {
 	return Response{"Frank Ocean"}, nil
 }
 
+func handleRouteWithoutParam() (interface{}, error) {
+	return nil, errors.New("Nothing here in empty route")
+}
+
+func handleRouteWithMultipleParams(lorem string, foo string) (interface{}, error) {
+	return nil, errors.New("Nothing here in empty route")
+}
+
+func handleRouteWithThreeReturnValue() (interface{}, interface{}, interface{}) {
+	return nil, nil, nil
+}
+
+func handleRouteWithOneReturnValue() error {
+	return errors.New("Nothing here in route with one return value")
+}
+
+func handleRouteWithNoReturnValue() {
+
+}
+
 var (
 	r = router.New()
 )
@@ -45,6 +66,7 @@ func TestMain(m *testing.M) {
 	r.Add("fieldA", handleRouteA)
 	r.Add("fieldB", handleRouteB)
 	r.Add("fieldEmpty", handleRouteEmpty)
+	r.Add("fieldNoParam", handleRouteWithoutParam)
 
 	os.Exit(m.Run())
 }
@@ -54,6 +76,30 @@ func TestRouteMustBeFunction(t *testing.T) {
 
 	assert.NotNil(t, err)
 	assert.Equal(t, "Handler is not a function, but bool", err.Error())
+}
+
+func TestRouteMustReturnTwoParameters(t *testing.T) {
+	errNoReturn := r.Add("fieldD", handleRouteWithNoReturnValue)
+
+	assert.NotNil(t, errNoReturn)
+	assert.Equal(t, "Router only supports handler with two return values", errNoReturn.Error())
+
+	errOneReturn := r.Add("fieldD", handleRouteWithOneReturnValue)
+
+	assert.NotNil(t, errOneReturn)
+	assert.Equal(t, "Router only supports handler with two return values", errOneReturn.Error())
+
+	errThreeReturn := r.Add("fieldD", handleRouteWithThreeReturnValue)
+
+	assert.NotNil(t, errThreeReturn)
+	assert.Equal(t, "Router only supports handler with two return values", errThreeReturn.Error())
+}
+
+func TestRouteMustNotHaveMultipleParams(t *testing.T) {
+	errMultiple := r.Add("fieldMultipleParam", handleRouteWithMultipleParams)
+
+	assert.NotNil(t, errMultiple)
+	assert.Equal(t, "Router only supports handler with one or none parameter", errMultiple.Error())
 }
 
 func TestRouteMatchA(t *testing.T) {
@@ -84,6 +130,16 @@ func TestRouteMatchEmpty(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, "Frank Ocean", res.(Response).Name)
+}
+
+func TestRouteWithoutParam(t *testing.T) {
+	res, err := r.Serve(router.Request{
+		Field:     "fieldNoParam",
+		Arguments: json.RawMessage("{}"),
+	})
+
+	assert.Nil(t, res)
+	assert.Equal(t, "Nothing here in empty route", err.Error())
 }
 
 func TestRouteMiss(t *testing.T) {

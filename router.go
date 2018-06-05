@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 )
@@ -21,7 +22,16 @@ func (r Router) Add(route string, function interface{}) error {
 		return fmt.Errorf("Handler is not a function, but %s", kind)
 	}
 
+	if reflect.TypeOf(function).NumIn() > 1 {
+		return errors.New("Router only supports handler with one or none parameter")
+	}
+
+	if reflect.TypeOf(function).NumOut() != 2 {
+		return errors.New("Router only supports handler with two return values")
+	}
+
 	r[route] = Handler{function}
+
 	return nil
 }
 

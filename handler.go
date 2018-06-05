@@ -12,6 +12,10 @@ type Handler struct {
 
 // Prepare parses event payload
 func (h *Handler) Prepare(payload json.RawMessage) ([]reflect.Value, error) {
+	if reflect.TypeOf(h.function).NumIn() == 0 {
+		return nil, nil
+	}
+
 	argsType := reflect.TypeOf(h.function).In(0)
 	args := reflect.New(argsType)
 

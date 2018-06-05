@@ -7,7 +7,7 @@
 [![Build Status](https://img.shields.io/circleci/project/sbstjn/appsync-router.svg?maxAge=600)](https://circleci.com/gh/sbstjn/appsync-router)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ae56f89b122d14b9749e/test_coverage)](https://codeclimate.com/github/sbstjn/appsync-router/test_coverage)
 
-Wrapper for routing AppSync resolvers with AWS Lambda using Go.
+Wrapper for routing AppSync resolvers with AWS Lambda using Go. See [appsync-router-example] for an example project.
 
 ## Usage
 
@@ -101,3 +101,5 @@ Feel free to use the code, it's released using the [MIT license](LICENSE.md).
 You are welcome to contribute to this project! 😘 
 
 To make sure you have a pleasant experience, please read the [code of conduct](CODE_OF_CONDUCT.md). It outlines core values and beliefs and will make working together a happier experience.
+
+[appsync-router-example]: https://github.com/sbstjn/appsync-router-example

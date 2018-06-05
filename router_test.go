@@ -18,12 +18,23 @@ type ParamsRouteB struct {
 	Bar string `json:"bar"`
 }
 
+type Response struct {
+	Name string `json:"name"`
+}
+
+type ParamsRouteEmpty struct {
+}
+
 func handleRouteA(args ParamsRouteA) (interface{}, error) {
 	return nil, fmt.Errorf("Nothing here in route A: %s", args.Foo)
 }
 
 func handleRouteB(args ParamsRouteB) (interface{}, error) {
 	return nil, fmt.Errorf("Nothing here in route B: %s", args.Bar)
+}
+
+func handleRouteEmpty(args ParamsRouteEmpty) (interface{}, error) {
+	return Response{"Frank Ocean"}, nil
 }
 
 var (
@@ -33,6 +44,7 @@ var (
 func TestMain(m *testing.M) {
 	r.Add("fieldA", handleRouteA)
 	r.Add("fieldB", handleRouteB)
+	r.Add("fieldEmpty", handleRouteEmpty)
 
 	os.Exit(m.Run())
 }
@@ -62,6 +74,16 @@ func TestRouteMatchB(t *testing.T) {
 
 	assert.Nil(t, routeB)
 	assert.Equal(t, "Nothing here in route B: foo", err.Error())
+}
+
+func TestRouteMatchEmpty(t *testing.T) {
+	res, err := r.Serve(router.Request{
+		Field:     "fieldEmpty",
+		Arguments: json.RawMessage("{}"),
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, "Frank Ocean", res.(Response).Name)
 }
 
 func TestRouteMiss(t *testing.T) {

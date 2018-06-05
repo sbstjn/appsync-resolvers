@@ -24,7 +24,12 @@ func (h *Handler) Prepare(payload json.RawMessage) ([]reflect.Value, error) {
 
 // Call the handler and pass event
 func (h *Handler) Call(args []reflect.Value) (interface{}, error) {
+	var err error
 	response := reflect.ValueOf(h.function).Call(args)
 
-	return response[0].Interface(), response[1].Interface().(error)
+	if response[1].Interface() != nil {
+		err = response[1].Interface().(error)
+	}
+
+	return response[0].Interface(), err
 }

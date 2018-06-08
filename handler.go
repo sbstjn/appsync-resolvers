@@ -2,6 +2,8 @@ package router
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -27,13 +29,55 @@ func (h *Handler) Prepare(payload json.RawMessage) ([]reflect.Value, error) {
 }
 
 // Call the handler and pass event
-func (h *Handler) Call(args []reflect.Value) (interface{}, error) {
-	var err error
-	response := reflect.ValueOf(h.function).Call(args)
+func (h *Handler) Call(payload json.RawMessage) (interface{}, error) {
+	args, err := h.Prepare(payload)
 
-	if response[1].Interface() != nil {
-		err = response[1].Interface().(error)
+	if err != nil {
+		return nil, err
 	}
 
-	return response[0].Interface(), err
+	returnValues := reflect.ValueOf(h.function).Call(args)
+	var returnData interface{}
+	var returnError error
+
+	if len(returnValues) == 2 {
+		returnData = returnValues[0].Interface()
+	}
+
+	if err := returnValues[len(returnValues)-1].Interface(); err != nil {
+		returnError = err.(error)
+	}
+
+	return returnData, returnError
+}
+
+// Validate checks if passed handler is valid
+func (h Handler) Validate() error {
+	handler := reflect.TypeOf(h.function)
+
+	if kind := handler.Kind(); kind != reflect.Func {
+		return fmt.Errorf("Handler is not a function, but %s", kind)
+	}
+
+	if handler.NumIn() > 1 {
+		return errors.New("Handler must not have more than one argument")
+	}
+
+	if handler.NumIn() == 1 && handler.In(0).Kind() != reflect.Struct {
+		return errors.New("Handler argument must be struct")
+	}
+
+	if handler.NumOut() > 2 {
+		return errors.New("Handler must not have more than two return values")
+	}
+
+	if handler.NumOut() < 1 {
+		return errors.New("Handler must have at least one return value")
+	}
+
+	if last := handler.Out(handler.NumOut() - 1); last.String() != "error" {
+		return errors.New("Last or only return value must be an error")
+	}
+
+	return nil
 }

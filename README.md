@@ -50,7 +50,7 @@ func init() {
 }
 
 func main() {
-	lambda.Start(r.Serve)
+	lambda.Start(r.Handle)
 }
 ```
 

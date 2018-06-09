@@ -1,4 +1,18 @@
-test:
-	@ go test -cover -coverprofile=c.out -race ./... 
+COVERAGE_FILE ?= c.out
 
-.PHONY: test
+test:
+	@ go test -coverprofile=$(COVERAGE_FILE) $(RACE) ./... 
+
+tool:
+	@ go tool cover -$(MODE)=$(COVERAGE_FILE)
+
+race: RACE=-race
+race: test
+
+func: MODE=func
+func: test tool
+
+html: MODE=html
+html: test tool
+
+.PHONY: test tool

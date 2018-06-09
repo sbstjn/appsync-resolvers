@@ -39,9 +39,10 @@ func (r Router) Get(route string) (*Handler, error) {
 
 // Handle responds to the AppSync request
 func (r Router) Handle(req Request) (interface{}, error) {
-	handler, err := r.Get(req.Field)
+	var handler *Handler
+	var err error
 
-	if err != nil {
+	if handler, err = r.Get(req.Field); err != nil {
 		return nil, err
 	}
 

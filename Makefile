@@ -3,6 +3,9 @@ COVERAGE_FILE ?= c.out
 test:
 	@ go test -coverprofile=$(COVERAGE_FILE) $(RACE) ./... 
 
+lint:
+	@ golint ./..
+
 tool:
 	@ go tool cover -$(MODE)=$(COVERAGE_FILE)
 

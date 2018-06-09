@@ -16,9 +16,13 @@ func TestInvalidHandlerFunction(t *testing.T) {
 	assert.Error(t, Handler{func() interface{} { return nil }}.Validate())
 	assert.Error(t, Handler{func(args struct{}) {}}.Validate())
 	assert.Error(t, Handler{func(args struct{}) interface{} { return nil }}.Validate())
-	assert.Error(t, Handler{func(args struct{}) (interface{}, interface{}) { return nil, nil }}.Validate(), "Second return value is not an error")
+	assert.Error(t, Handler{func(args struct{}) (interface{}, interface{}) { return nil, nil }}.Validate())
 
-	assert.Error(t, Handler{func(args string) (interface{}, error) { return nil, nil }}.Validate(), "Non-structs as parameter")
+	assert.Error(t, Handler{func(args string) (interface{}, error) { return nil, nil }}.Validate())
+
+	assert.Error(t, Handler{func(args struct{}, param struct{}) (interface{}, error) { return nil, nil }}.Validate())
+
+	assert.Error(t, Handler{func(args struct{}) (interface{}, error, error) { return nil, nil, nil }}.Validate())
 }
 
 func TestValidHandlerFunction(t *testing.T) {

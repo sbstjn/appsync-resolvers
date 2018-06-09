@@ -24,6 +24,11 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestRouteValidationOnAdd(t *testing.T) {
+	assert.Nil(t, r.Add("validWithoutParameter-again", func() error { return nil }))
+	assert.Error(t, r.Add("invalidHandler", func(args bool) error { return nil }))
+}
+
 func TestRouteMiss(t *testing.T) {
 	undefiendRoute, err := r.Handle(router.Request{
 		Field:     "invalid",

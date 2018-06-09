@@ -18,4 +18,4 @@ func: test tool
 html: MODE=html
 html: test tool
 
-.PHONY: test tool
+.PHONY: test lint tool race func html

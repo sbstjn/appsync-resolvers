@@ -5,12 +5,11 @@ import (
 	"reflect"
 )
 
-// Handler is an abstract function
-type Handler struct {
+type handler struct {
 	function interface{}
 }
 
-func (h *Handler) prepare(payload json.RawMessage) ([]reflect.Value, error) {
+func (h *handler) prepare(payload json.RawMessage) ([]reflect.Value, error) {
 	if reflect.TypeOf(h.function).NumIn() == 0 {
 		return nil, nil
 	}
@@ -25,7 +24,7 @@ func (h *Handler) prepare(payload json.RawMessage) ([]reflect.Value, error) {
 	return append([]reflect.Value{}, args.Elem()), nil
 }
 
-func (h *Handler) call(payload json.RawMessage) (interface{}, error) {
+func (h *handler) call(payload json.RawMessage) (interface{}, error) {
 	args, err := h.prepare(payload)
 
 	if err != nil {
@@ -47,7 +46,7 @@ func (h *Handler) call(payload json.RawMessage) (interface{}, error) {
 	return returnData, returnError
 }
 
-func (h Handler) validate() error {
+func (h handler) validate() error {
 	handler := reflect.TypeOf(h.function)
 
 	return validators.run(handler)

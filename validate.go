@@ -7,18 +7,29 @@ import (
 )
 
 type validate func(h reflect.Type) error
+type validateList []validate
 
-var validateList = []validate{
+func (v validateList) run(handler reflect.Type) error {
+	for _, validator := range v {
+		if err := validator(handler); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+var validators = validateList{
 	func(h reflect.Type) error {
 		if kind := h.Kind(); kind != reflect.Func {
-			return fmt.Errorf("Handler is not a function, but %s", kind)
+			return fmt.Errorf("Handler is not a function, got %s", kind)
 		}
 
 		return nil
 	},
 	func(h reflect.Type) error {
-		if h.NumIn() > 1 {
-			return errors.New("Handler must not have more than one argument, got ")
+		if num := h.NumIn(); num > 1 {
+			return fmt.Errorf("Handler must not have more than one argument, got %v", num)
 		}
 
 		return nil
@@ -31,8 +42,8 @@ var validateList = []validate{
 		return nil
 	},
 	func(h reflect.Type) error {
-		if h.NumOut() > 2 {
-			return errors.New("Handler must not have more than two return values")
+		if num := h.NumOut(); num > 2 {
+			return fmt.Errorf("Handler must not have more than two return values, got %v", num)
 		}
 
 		return nil

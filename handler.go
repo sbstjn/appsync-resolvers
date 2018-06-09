@@ -53,11 +53,5 @@ func (h *Handler) Call(payload json.RawMessage) (interface{}, error) {
 func (h Handler) Validate() error {
 	handler := reflect.TypeOf(h.function)
 
-	for _, validator := range validateList {
-		if err := validator(handler); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return validators.run(handler)
 }

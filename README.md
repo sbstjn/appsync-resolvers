@@ -7,7 +7,7 @@
 [![Build Status](https://img.shields.io/circleci/project/sbstjn/appsync-router.svg?maxAge=600)](https://circleci.com/gh/sbstjn/appsync-router)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ae56f89b122d14b9749e/test_coverage)](https://codeclimate.com/github/sbstjn/appsync-router/test_coverage)
 
-> Wrapper for routing AWS AppSync resolvers with AWS Lambda using Go. See [appsync-router-example] for an example project and how to set up a complete GraphQL API using the [Serverless Application Model] by Amazon.
+> Wrapper for routing AWS AppSync resolvers with AWS Lambda in Go. See [appsync-router-example] for an example project and how to set up a complete GraphQL API using the [Serverless Application Model].
 
 ## Usage
 
@@ -24,20 +24,16 @@ import (
   "github.com/sbstjn/appsync-router"
 )
 
-type ParamsRouteA struct {
+func resolverA(args struct {
 	Foo string `json:"foo"`
+}) (interface{}, error) {
+	return nil, fmt.Errorf("Nothing here in resolver A: %s", args.Foo)
 }
 
-type ParamsRouteB struct {
+func resolverB(args struct {
 	Bar string `json:"bar"`
-}
-
-func handleRouteA(args ParamsRouteA) (interface{}, error) {
-	return nil, fmt.Errorf("Nothing here in route A: %s", args.Foo)
-}
-
-func handleRouteB(args ParamsRouteB) (interface{}, error) {
-	return nil, fmt.Errorf("Nothing here in route B: %s", args.Bar)
+}) (interface{}, error) {
+	return nil, fmt.Errorf("Nothing here in resolver B: %s", args.Bar)
 }
 
 var (
@@ -45,8 +41,8 @@ var (
 )
 
 func init() {
-	r.Add("fieldA", handleRouteA)
-	r.Add("fieldB", handleRouteB)
+	r.Add("fieldA", resolverA)
+	r.Add("fieldB", resolverB)
 }
 
 func main() {
@@ -56,7 +52,7 @@ func main() {
 
 ### AppSync Configuration
 
-Routing is based on a `field` property in your `RequestMappingTemplate`, which can be configured using the AWS Console or CloudFormation as well.
+Routing is based on a `field` property in your `RequestMappingTemplate`, which can be configured using the AWS Console or CloudFormation as well. This approach works fine with the recommended [AWS setup] with multiple custom resolvers and AWS Lambda:
 
 ```yaml
   AppSyncDataSource:
@@ -90,7 +86,7 @@ Routing is based on a `field` property in your `RequestMappingTemplate`, which c
       ResponseMappingTemplate: $util.toJson($context.result)
 ```
 
-See [appsync-router-example] for a full working example how to use `appsync-router` and [Amazon Serverless Application Model] to deploy a GraphQL API using AppSync.
+See [appsync-router-example] for a full working example how to use `appsync-router` and the [Amazon Serverless Application Model] to deploy a GraphQL API using AppSync.
 
 ## License
 
@@ -104,3 +100,4 @@ To make sure you have a pleasant experience, please read the [code of conduct](C
 
 [appsync-router-example]: https://github.com/sbstjn/appsync-router-example
 [Serverless Application Model]: https://github.com/awslabs/serverless-application-model
+[AWS setup]: https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-lambda-resolvers.html

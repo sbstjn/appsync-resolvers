@@ -44,6 +44,17 @@ jobs:
             - "*.go"
             - .git
 
+  lint:
+    <<: *defaults
+
+    steps:
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: Run linter
+          command: make lint
+
   test:
     <<: *defaults
 
@@ -81,16 +92,24 @@ workflows:
   build:
     jobs:
       - checkout
+      - lint:
+          requires:
+            - checkout
       - test:
           requires:
             - checkout
       - coverage:
           requires:
             - test
+            - lint
   release:
     jobs:
       - checkout:
           <<: *releases
+      - lint:
+          <<: *releases
+          requires:
+            - checkout
       - test:
           <<: *releases
           requires:
@@ -99,3 +118,4 @@ workflows:
           <<: *releases
           requires:
             - test
+            - lint

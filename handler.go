@@ -10,8 +10,7 @@ type Handler struct {
 	function interface{}
 }
 
-// Prepare parses event payload
-func (h *Handler) Prepare(payload json.RawMessage) ([]reflect.Value, error) {
+func (h *Handler) prepare(payload json.RawMessage) ([]reflect.Value, error) {
 	if reflect.TypeOf(h.function).NumIn() == 0 {
 		return nil, nil
 	}
@@ -26,9 +25,8 @@ func (h *Handler) Prepare(payload json.RawMessage) ([]reflect.Value, error) {
 	return append([]reflect.Value{}, args.Elem()), nil
 }
 
-// Call the handler and pass event
-func (h *Handler) Call(payload json.RawMessage) (interface{}, error) {
-	args, err := h.Prepare(payload)
+func (h *Handler) call(payload json.RawMessage) (interface{}, error) {
+	args, err := h.prepare(payload)
 
 	if err != nil {
 		return nil, err
@@ -49,8 +47,7 @@ func (h *Handler) Call(payload json.RawMessage) (interface{}, error) {
 	return returnData, returnError
 }
 
-// Validate checks if passed handler is valid
-func (h Handler) Validate() error {
+func (h Handler) validate() error {
 	handler := reflect.TypeOf(h.function)
 
 	return validators.run(handler)

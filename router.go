@@ -5,8 +5,7 @@ import (
 	"fmt"
 )
 
-// Request stores all information from AppSync request
-type Request struct {
+type request struct {
 	Field     string          `json:"field"`
 	Arguments json.RawMessage `json:"arguments"`
 }
@@ -18,7 +17,7 @@ type Router map[string]Handler
 func (r Router) Add(route string, function interface{}) error {
 	handler := Handler{function}
 
-	if err := handler.Validate(); err != nil {
+	if err := handler.validate(); err != nil {
 		return err
 	}
 
@@ -27,8 +26,7 @@ func (r Router) Add(route string, function interface{}) error {
 	return nil
 }
 
-// Get return handler for route or error
-func (r Router) Get(route string) (*Handler, error) {
+func (r Router) get(route string) (*Handler, error) {
 	handler, found := r[route]
 	if !found {
 		return nil, fmt.Errorf("No handler for request found: %s", route)
@@ -38,15 +36,15 @@ func (r Router) Get(route string) (*Handler, error) {
 }
 
 // Handle responds to the AppSync request
-func (r Router) Handle(req Request) (interface{}, error) {
+func (r Router) Handle(req request) (interface{}, error) {
 	var handler *Handler
 	var err error
 
-	if handler, err = r.Get(req.Field); err != nil {
+	if handler, err = r.get(req.Field); err != nil {
 		return nil, err
 	}
 
-	return handler.Call(req.Arguments)
+	return handler.call(req.Arguments)
 }
 
 // New returns a new Router

@@ -1,4 +1,4 @@
-package router_test
+package router
 
 import (
 	"encoding/json"
@@ -6,16 +6,15 @@ import (
 	"os"
 	"testing"
 
-	router "github.com/sbstjn/appsync-router"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	r = router.New()
+	r = New()
 )
 
 func createHandleResponse(route string) (interface{}, error) {
-	return r.Handle(router.Request{
+	return r.Handle(request{
 		Field:     route,
 		Arguments: json.RawMessage("{}"),
 	})
@@ -82,7 +81,7 @@ func TestRegisteredRoutes(t *testing.T) {
 }
 
 func TestRouteMiss(t *testing.T) {
-	undefiendRoute, err := r.Handle(router.Request{
+	undefiendRoute, err := r.Handle(request{
 		Field:     "invalid",
 		Arguments: json.RawMessage("{}"),
 	})
@@ -92,7 +91,7 @@ func TestRouteMiss(t *testing.T) {
 }
 
 func TestRouteMatchWithInvalidPayload(t *testing.T) {
-	validRoute, err := r.Handle(router.Request{
+	validRoute, err := r.Handle(request{
 		Field:     "validWithOneParameter",
 		Arguments: json.RawMessage("{}}"),
 	})

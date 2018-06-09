@@ -12,6 +12,10 @@ type Handler struct {
 
 // Prepare parses event payload
 func (h *Handler) Prepare(payload json.RawMessage) ([]reflect.Value, error) {
+	if reflect.TypeOf(h.function).NumIn() == 0 {
+		return nil, nil
+	}
+
 	argsType := reflect.TypeOf(h.function).In(0)
 	args := reflect.New(argsType)
 
@@ -23,13 +27,31 @@ func (h *Handler) Prepare(payload json.RawMessage) ([]reflect.Value, error) {
 }
 
 // Call the handler and pass event
-func (h *Handler) Call(args []reflect.Value) (interface{}, error) {
-	var err error
-	response := reflect.ValueOf(h.function).Call(args)
+func (h *Handler) Call(payload json.RawMessage) (interface{}, error) {
+	args, err := h.Prepare(payload)
 
-	if response[1].Interface() != nil {
-		err = response[1].Interface().(error)
+	if err != nil {
+		return nil, err
 	}
 
-	return response[0].Interface(), err
+	returnValues := reflect.ValueOf(h.function).Call(args)
+	var returnData interface{}
+	var returnError error
+
+	if len(returnValues) == 2 {
+		returnData = returnValues[0].Interface()
+	}
+
+	if err := returnValues[len(returnValues)-1].Interface(); err != nil {
+		returnError = err.(error)
+	}
+
+	return returnData, returnError
+}
+
+// Validate checks if passed handler is valid
+func (h Handler) Validate() error {
+	handler := reflect.TypeOf(h.function)
+
+	return validators.run(handler)
 }

@@ -2,7 +2,7 @@ package router_test
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"os"
 	"testing"
 
@@ -10,98 +10,94 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type ParamsRouteA struct {
-	Foo string `json:"foo"`
-}
-
-type ParamsRouteB struct {
-	Bar string `json:"bar"`
-}
-
-type Response struct {
-	Name string `json:"name"`
-}
-
-type ParamsRouteEmpty struct {
-}
-
-func handleRouteA(args ParamsRouteA) (interface{}, error) {
-	return nil, fmt.Errorf("Nothing here in route A: %s", args.Foo)
-}
-
-func handleRouteB(args ParamsRouteB) (interface{}, error) {
-	return nil, fmt.Errorf("Nothing here in route B: %s", args.Bar)
-}
-
-func handleRouteEmpty(args ParamsRouteEmpty) (interface{}, error) {
-	return Response{"Frank Ocean"}, nil
-}
-
 var (
 	r = router.New()
 )
 
+func createHandleResponse(route string) (interface{}, error) {
+	return r.Handle(router.Request{
+		Field:     route,
+		Arguments: json.RawMessage("{}"),
+	})
+}
+
 func TestMain(m *testing.M) {
-	r.Add("fieldA", handleRouteA)
-	r.Add("fieldB", handleRouteB)
-	r.Add("fieldEmpty", handleRouteEmpty)
+	r.Add("routeWithArgumentsAndSingleReturnThatReturnsError", func(args struct{ Foo bool }) error {
+		return errors.New("Example Error")
+	})
+	r.Add("routeWithArgumentsAndSingleReturnThatReturnsNil", func(args struct{ Foo bool }) error {
+		return nil
+	})
+	r.Add("routeWithArgumentsAndTwoReturnsThatReturnsError", func(args struct{ Foo bool }) (interface{}, error) {
+		return nil, errors.New("Example Error")
+	})
+	r.Add("routeWithArgumentsAndTwoReturnsThatReturnsData", func(args struct{ Foo bool }) (interface{}, error) {
+		type data struct {
+			Foo bool
+		}
+		return data{true}, nil
+	})
+	r.Add("routeWithArgumentsAndTwoReturnsThatReturnsNil", func(args struct{ Foo bool }) (interface{}, error) {
+		return nil, nil
+	})
+
+	r.Add("validWithoutParameter", func() error { return nil })
+	r.Add("validWithOneParameter", func(args struct {
+		Name string `json:"name"`
+	}) error {
+		return nil
+	})
 
 	os.Exit(m.Run())
 }
 
-func TestRouteMustBeFunction(t *testing.T) {
-	err := r.Add("fieldD", true)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, "Handler is not a function, but bool", err.Error())
+func TestRouteValidationOnAdd(t *testing.T) {
+	assert.Nil(t, r.Add("validWithoutParameter-again", func() error { return nil }))
+	assert.Error(t, r.Add("invalidHandler", func(args bool) error { return nil }))
 }
 
-func TestRouteMatchA(t *testing.T) {
-	routeA, err := r.Serve(router.Request{
-		Field:     "fieldA",
-		Arguments: json.RawMessage("{\"foo\":\"bar\"}"),
-	})
+func TestRegisteredRoutes(t *testing.T) {
+	var data interface{}
+	var err error
 
-	assert.Nil(t, routeA)
-	assert.Equal(t, "Nothing here in route A: bar", err.Error())
-}
+	data, err = createHandleResponse("routeWithArgumentsAndSingleReturnThatReturnsError")
+	assert.Nil(t, data)
+	assert.Error(t, err)
 
-func TestRouteMatchB(t *testing.T) {
-	routeB, err := r.Serve(router.Request{
-		Field:     "fieldB",
-		Arguments: json.RawMessage("{\"bar\":\"foo\"}"),
-	})
-
-	assert.Nil(t, routeB)
-	assert.Equal(t, "Nothing here in route B: foo", err.Error())
-}
-
-func TestRouteMatchEmpty(t *testing.T) {
-	res, err := r.Serve(router.Request{
-		Field:     "fieldEmpty",
-		Arguments: json.RawMessage("{}"),
-	})
-
+	data, err = createHandleResponse("routeWithArgumentsAndSingleReturnThatReturnsNil")
+	assert.Nil(t, data)
 	assert.Nil(t, err)
-	assert.Equal(t, "Frank Ocean", res.(Response).Name)
+
+	data, err = createHandleResponse("routeWithArgumentsAndTwoReturnsThatReturnsError")
+	assert.Nil(t, data)
+	assert.Error(t, err)
+
+	data, err = createHandleResponse("routeWithArgumentsAndTwoReturnsThatReturnsData")
+	assert.NotNil(t, data)
+	assert.Nil(t, err)
+
+	data, err = createHandleResponse("routeWithArgumentsAndTwoReturnsThatReturnsNil")
+	assert.Nil(t, data)
+	assert.Nil(t, err)
 }
 
 func TestRouteMiss(t *testing.T) {
-	routeC, err := r.Serve(router.Request{
-		Field:     "fieldC",
-		Arguments: json.RawMessage(""),
+	undefiendRoute, err := r.Handle(router.Request{
+		Field:     "invalid",
+		Arguments: json.RawMessage("{}"),
 	})
 
-	assert.Nil(t, routeC)
-	assert.Equal(t, "No handler for request found: fieldC", err.Error())
+	assert.Nil(t, undefiendRoute)
+	assert.Equal(t, "No handler for request found: invalid", err.Error())
 }
 
 func TestRouteMatchWithInvalidPayload(t *testing.T) {
-	routeA, err := r.Serve(router.Request{
-		Field:     "fieldA",
-		Arguments: json.RawMessage(""),
+	validRoute, err := r.Handle(router.Request{
+		Field:     "validWithOneParameter",
+		Arguments: json.RawMessage("{}}"),
 	})
 
-	assert.Nil(t, routeA)
-	assert.Equal(t, "unexpected end of JSON input", err.Error())
+	assert.Nil(t, validRoute)
+	assert.NotNil(t, err)
+	assert.Equal(t, "invalid character '}' after top-level value", err.Error())
 }

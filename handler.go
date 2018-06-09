@@ -2,8 +2,6 @@ package router
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"reflect"
 )
 
@@ -55,28 +53,10 @@ func (h *Handler) Call(payload json.RawMessage) (interface{}, error) {
 func (h Handler) Validate() error {
 	handler := reflect.TypeOf(h.function)
 
-	if kind := handler.Kind(); kind != reflect.Func {
-		return fmt.Errorf("Handler is not a function, but %s", kind)
-	}
-
-	if handler.NumIn() > 1 {
-		return errors.New("Handler must not have more than one argument")
-	}
-
-	if handler.NumIn() == 1 && handler.In(0).Kind() != reflect.Struct {
-		return errors.New("Handler argument must be struct")
-	}
-
-	if handler.NumOut() > 2 {
-		return errors.New("Handler must not have more than two return values")
-	}
-
-	if handler.NumOut() < 1 {
-		return errors.New("Handler must have at least one return value")
-	}
-
-	if last := handler.Out(handler.NumOut() - 1); last.String() != "error" {
-		return errors.New("Last or only return value must be an error")
+	for _, validator := range validateList {
+		if err := validator(handler); err != nil {
+			return err
+		}
 	}
 
 	return nil

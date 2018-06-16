@@ -14,7 +14,7 @@ var (
 )
 
 func createHandleResponse(route string) (interface{}, error) {
-	return r.Handle(request{
+	return r.Handle(invocation{
 		Field:     route,
 		Arguments: json.RawMessage("{}"),
 	})
@@ -81,7 +81,7 @@ func TestRegisteredRoutes(t *testing.T) {
 }
 
 func TestRouteMiss(t *testing.T) {
-	undefiendRoute, err := r.Handle(request{
+	undefiendRoute, err := r.Handle(invocation{
 		Field:     "invalid",
 		Arguments: json.RawMessage("{}"),
 	})
@@ -91,7 +91,7 @@ func TestRouteMiss(t *testing.T) {
 }
 
 func TestRouteMatchWithInvalidPayload(t *testing.T) {
-	validRoute, err := r.Handle(request{
+	validRoute, err := r.Handle(invocation{
 		Field:     "validWithOneParameter",
 		Arguments: json.RawMessage("{}}"),
 	})

@@ -1,4 +1,4 @@
-# AppSync Router
+# AppSync Resolvers
 
 [![GitHub release](https://img.shields.io/github/release/sbstjn/appsync-router.svg?maxAge=600)](https://github.com/sbstjn/appsync-router/releases)
 [![MIT License](https://img.shields.io/github/license/sbstjn/appsync-router.svg?maxAge=3600)](https://github.com/sbstjn/appsync-router/blob/master/LICENSE.md)
@@ -7,7 +7,7 @@
 [![Build Status](https://img.shields.io/circleci/project/sbstjn/appsync-router.svg?maxAge=600)](https://circleci.com/gh/sbstjn/appsync-router)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ae56f89b122d14b9749e/test_coverage)](https://codeclimate.com/github/sbstjn/appsync-router/test_coverage)
 
-> Wrapper for routing AWS AppSync resolvers with AWS Lambda in Go. See [appsync-router-example] for an example project and how to set up a complete GraphQL API using the [Serverless Application Model].
+> Wrapper for handling AWS AppSync resolvers with AWS Lambda in Go. See [appsync-router-example] for an example project and how to set up a complete GraphQL API using the [Serverless Application Model].
 
 ## Usage
 
@@ -24,9 +24,7 @@ import (
   "github.com/sbstjn/appsync-router"
 )
 
-func resolverA(args struct {
-	Foo string `json:"foo"`
-}) (interface{}, error) {
+func resolverA() (interface{}, error) {
 	return nil, fmt.Errorf("Nothing here in resolver A: %s", args.Foo)
 }
 
@@ -41,6 +39,8 @@ var (
 )
 
 func init() {
+  r = router.New()
+
 	r.Add("fieldA", resolverA)
 	r.Add("fieldB", resolverB)
 }
@@ -52,7 +52,7 @@ func main() {
 
 ### AppSync Configuration
 
-Routing is based on a `field` property in your `RequestMappingTemplate`, which can be configured using the AWS Console or CloudFormation as well. This approach works fine with the recommended [AWS setup] with multiple custom resolvers and AWS Lambda:
+Resolver lookup is based on a `field` property in your `RequestMappingTemplate`, which can be configured using the AWS Console or CloudFormation as well. This approach works fine with the recommended [AWS setup] for multiple custom resolvers and AWS Lambda data sources:
 
 ```yaml
   AppSyncDataSource:
@@ -86,7 +86,7 @@ Routing is based on a `field` property in your `RequestMappingTemplate`, which c
       ResponseMappingTemplate: $util.toJson($context.result)
 ```
 
-See [appsync-router-example] for a full working example how to use `appsync-router` and the [Amazon Serverless Application Model] to deploy a GraphQL API using AppSync.
+See [appsync-router-example] for an example project and how to set up a serverless GraphQL API with AWS AppSync using the [Serverless Application Model].
 
 ## License
 

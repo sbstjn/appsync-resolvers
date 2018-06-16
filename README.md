@@ -39,8 +39,6 @@ var (
 )
 
 func init() {
-  r = router.New()
-
 	r.Add("fieldA", resolverA)
 	r.Add("fieldB", resolverB)
 }

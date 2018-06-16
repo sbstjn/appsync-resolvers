@@ -1,4 +1,4 @@
-package router
+package resolvers
 
 import (
 	"errors"

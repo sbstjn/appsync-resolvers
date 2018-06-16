@@ -1,5 +1,5 @@
 defaults: &defaults
-  working_directory: /go/src/github.com/sbstjn/appsync-router
+  working_directory: /go/src/github.com/sbstjn/appsync-resolvers
   docker:
     - image: jimdo/golang-dep
 

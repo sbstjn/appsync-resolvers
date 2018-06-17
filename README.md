@@ -25,7 +25,7 @@ import (
 )
 
 func resolverA() (interface{}, error) {
-	return nil, fmt.Errorf("Nothing here in resolver A: %s", args.Foo)
+	return nil, fmt.Errorf("Nothing here in resolver")
 }
 
 func resolverB(args struct {

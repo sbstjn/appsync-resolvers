@@ -21,30 +21,37 @@ $ > go get github.com/sbstjn/appsync-resolvers
 
 ```go
 import (
-  "github.com/sbstjn/appsync-resolvers"
+    "github.com/sbstjn/appsync-resolvers"
 )
 
-func resolverA() (interface{}, error) {
-	return nil, fmt.Errorf("Nothing here in resolver")
+type personArguments struct {
+    ID int `json:"id"`
 }
 
-func resolverB(args struct {
-	Bar string `json:"bar"`
-}) (interface{}, error) {
-	return nil, fmt.Errorf("Nothing here in resolver B: %s", args.Bar)
+func resolvePeople() (interface{}, error) {
+    return dataPeople, nil
+}
+
+func resolvePerson(p personArguments) (interface{}, error) {
+    return dataPeople.byID(p.ID)
+}
+
+func resolveFriends(p person) (interface{}, error) {
+    return p.getFriends()
 }
 
 var (
-	r = resolvers.New()
+    r = resolvers.New()
 )
 
 func init() {
-	r.Add("query.a", resolverA)
-	r.Add("query.b", resolverB)
+    r.Add("query.people", resolvePeople)
+    r.Add("query.person", resolvePerson)
+    r.Add("field.person.friends", resolveFriends)
 }
 
 func main() {
-	lambda.Start(r.Handle)
+    lambda.Start(r.Handle)
 }
 ```
 
@@ -63,28 +70,38 @@ Resolver lookup is based on a `resolve` property in your `RequestMappingTemplate
         LambdaFunctionArn: !GetAtt [ Lambda, Arn ]
       ServiceRoleArn: !GetAtt [ Role, Arn ]
 
-  AppSyncResolverA:
+  AppSyncResolverPeople:
     Type: AWS::AppSync::Resolver
     Properties:
       ApiId: !GetAtt [ AppSyncAPI, ApiId ]
       TypeName: Query
-      FieldName: fieldA
+      FieldName: people
       DataSourceName: !GetAtt [ AppSyncDataSource, Name ]
-      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "resolve": "query.a", "arguments": $utils.toJson($context.arguments) } }'
+      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "resolve": "query.people", "context": $utils.toJson($context) } }'
       ResponseMappingTemplate: $util.toJson($context.result)
 
-  AppSyncResolverB:
+  AppSyncResolverPerson:
     Type: AWS::AppSync::Resolver
     Properties:
       ApiId: !GetAtt [ AppSyncAPI, ApiId ]
       TypeName: Query
-      FieldName: fieldB
+      FieldName: person
       DataSourceName: !GetAtt [ AppSyncDataSource, Name ]
-      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "resolve": "query.b", "arguments": $utils.toJson($context.arguments) } }'
+      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "resolve": "query.person", "context": $utils.toJson($context) } }'
+      ResponseMappingTemplate: $util.toJson($context.result)
+
+  AppSyncResolverFriends:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      ApiId: !GetAtt [ AppSyncAPI, ApiId ]
+      TypeName: Person
+      FieldName: friends
+      DataSourceName: !GetAtt [ AppSyncDataSource, Name ]
+      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "resolve": "field.person.friends", "context": $utils.toJson($context) } }'
       ResponseMappingTemplate: $util.toJson($context.result)
 ```
 
-See [appsync-resolvers-example] for an example project and how to set up a serverless GraphQL API with AWS AppSync using the [Serverless Application Model].
+Head over to [appsync-resolvers-example] for an example project and how simple it can be to set up, maintain, and deploy a serverless GraphQL API with AWS AppSync using the [Serverless Application Model].
 
 ## License
 

@@ -5,23 +5,28 @@ import (
 	"fmt"
 )
 
-type invocation struct {
-	Field     string          `json:"field"`
+type context struct {
 	Arguments json.RawMessage `json:"arguments"`
+	Source    json.RawMessage `json:"source"`
+}
+
+type invocation struct {
+	Resolve string  `json:"resolve"`
+	Context context `json:"context"`
 }
 
 // Resolvers stores all routes and handlers
 type Resolvers map[string]resolver
 
 // Add stores a new resolver
-func (r Resolvers) Add(field string, f interface{}) error {
+func (r Resolvers) Add(resolve string, f interface{}) error {
 	handler := resolver{f}
 
 	if err := handler.validate(); err != nil {
 		return err
 	}
 
-	r[field] = handler
+	r[resolve] = handler
 
 	return nil
 }
@@ -40,11 +45,15 @@ func (r Resolvers) Handle(req invocation) (interface{}, error) {
 	var handler *resolver
 	var err error
 
-	if handler, err = r.get(req.Field); err != nil {
+	if handler, err = r.get(req.Resolve); err != nil {
 		return nil, err
 	}
 
-	return handler.call(req.Arguments)
+	if req.Context.Source != nil && string(req.Context.Source) != "null" {
+		return handler.call(req.Context.Source)
+	}
+
+	return handler.call(req.Context.Arguments)
 }
 
 // New returns a new lsit of Resolvers

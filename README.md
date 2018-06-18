@@ -39,8 +39,8 @@ var (
 )
 
 func init() {
-	r.Add("fieldA", resolverA)
-	r.Add("fieldB", resolverB)
+	r.Add("query.a", resolverA)
+	r.Add("query.b", resolverB)
 }
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 
 ### AppSync Configuration
 
-Resolver lookup is based on a `field` property in your `RequestMappingTemplate`, which can be configured using the AWS Console or CloudFormation as well. This approach works fine with the recommended [AWS setup] for multiple custom resolvers and AWS Lambda data sources:
+Resolver lookup is based on a `resolve` property in your `RequestMappingTemplate`, which can be configured using the AWS Console or CloudFormation as well. This approach works fine with the recommended [AWS setup] for multiple custom resolvers and AWS Lambda data sources:
 
 ```yaml
   AppSyncDataSource:
@@ -70,7 +70,7 @@ Resolver lookup is based on a `field` property in your `RequestMappingTemplate`,
       TypeName: Query
       FieldName: fieldA
       DataSourceName: !GetAtt [ AppSyncDataSource, Name ]
-      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "field": "fieldA", "arguments": $utils.toJson($context.arguments) } }'
+      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "resolve": "query.a", "arguments": $utils.toJson($context.arguments) } }'
       ResponseMappingTemplate: $util.toJson($context.result)
 
   AppSyncResolverB:
@@ -80,7 +80,7 @@ Resolver lookup is based on a `field` property in your `RequestMappingTemplate`,
       TypeName: Query
       FieldName: fieldB
       DataSourceName: !GetAtt [ AppSyncDataSource, Name ]
-      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "field": "fieldB", "arguments": $utils.toJson($context.arguments) } }'
+      RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "resolve": "query.b", "arguments": $utils.toJson($context.arguments) } }'
       ResponseMappingTemplate: $util.toJson($context.result)
 ```
 

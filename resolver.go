@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 )
 
@@ -18,7 +19,7 @@ func (h *resolver) prepare(payload json.RawMessage) ([]reflect.Value, error) {
 	args := reflect.New(argsType)
 
 	if err := json.Unmarshal(payload, args.Interface()); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Unable to prepare payload: %s", err.Error())
 	}
 
 	return append([]reflect.Value{}, args.Elem()), nil

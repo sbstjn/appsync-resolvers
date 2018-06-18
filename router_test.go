@@ -3,6 +3,7 @@ package resolvers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"testing"
 
@@ -15,8 +16,10 @@ var (
 
 func createHandleResponse(route string) (interface{}, error) {
 	return r.Handle(invocation{
-		Field:     route,
-		Arguments: json.RawMessage("{}"),
+		Resolve: route,
+		Context: context{
+			Arguments: json.RawMessage("{ \"Foo\": true }"),
+		},
 	})
 }
 
@@ -34,7 +37,7 @@ func TestMain(m *testing.M) {
 		type data struct {
 			Foo bool
 		}
-		return data{true}, nil
+		return data{args.Foo}, nil
 	})
 	r.Add("routeWithArgumentsAndTwoReturnsThatReturnsNil", func(args struct{ Foo bool }) (interface{}, error) {
 		return nil, nil
@@ -82,8 +85,10 @@ func TestRegisteredRoutes(t *testing.T) {
 
 func TestRouteMiss(t *testing.T) {
 	undefiendRoute, err := r.Handle(invocation{
-		Field:     "invalid",
-		Arguments: json.RawMessage("{}"),
+		Resolve: "invalid",
+		Context: context{
+			Arguments: json.RawMessage("{}"),
+		},
 	})
 
 	assert.Nil(t, undefiendRoute)
@@ -92,11 +97,25 @@ func TestRouteMiss(t *testing.T) {
 
 func TestRouteMatchWithInvalidPayload(t *testing.T) {
 	validRoute, err := r.Handle(invocation{
-		Field:     "validWithOneParameter",
-		Arguments: json.RawMessage("{}}"),
+		Resolve: "validWithOneParameter",
+		Context: context{
+			Arguments: json.RawMessage("{}}"),
+		},
 	})
 
 	assert.Nil(t, validRoute)
 	assert.NotNil(t, err)
-	assert.Equal(t, "invalid character '}' after top-level value", err.Error())
+	assert.Equal(t, "Unable to prepare payload: invalid character '}' after top-level value", err.Error())
+}
+
+func TestRouteMatchWithSourceData(t *testing.T) {
+	validRoute, err := r.Handle(invocation{
+		Resolve: "routeWithArgumentsAndTwoReturnsThatReturnsData",
+		Context: context{
+			Source: json.RawMessage("{ \"Foo\": true }"),
+		},
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, "{Foo:true}", fmt.Sprintf("%+v", validRoute))
 }

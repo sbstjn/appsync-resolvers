@@ -17,7 +17,7 @@
 $ > go get github.com/sbstjn/appsync-resolvers
 ```
 
-### Routing
+### Resolvers
 
 ```go
 import (

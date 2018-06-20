@@ -1,7 +1,7 @@
 # AppSync Resolvers
 
 [![GitHub release](https://img.shields.io/github/release/sbstjn/appsync-resolvers.svg?maxAge=600)](https://github.com/sbstjn/appsync-resolvers/releases)
-[![MIT License](https://img.shields.io/github/license/sbstjn/appsync-resolvers.svg?maxAge=3600)](https://github.com/sbstjn/appsync-resolvers/blob/master/LICENSE.md)
+[![MIT License](https://img.shields.io/github/license/sbstjn/appsync-resolvers.svg?maxAge=600)](https://github.com/sbstjn/appsync-resolvers/blob/master/LICENSE.md)
 [![GoDoc](https://godoc.org/github.com/sbstjn/appsync-resolvers?status.svg)](https://godoc.org/github.com/sbstjn/appsync-resolvers)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sbstjn/appsync-resolvers)](https://goreportcard.com/report/github.com/sbstjn/appsync-resolvers)
 [![Build Status](https://img.shields.io/circleci/project/sbstjn/appsync-resolvers.svg?maxAge=600)](https://circleci.com/gh/sbstjn/appsync-resolvers)

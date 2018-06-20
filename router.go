@@ -56,7 +56,7 @@ func (r Resolvers) Handle(req invocation) (interface{}, error) {
 	return handler.call(req.Context.Arguments)
 }
 
-// New returns a new lsit of Resolvers
+// New returns a new and empty list of Resolvers
 func New() Resolvers {
 	return Resolvers{}
 }

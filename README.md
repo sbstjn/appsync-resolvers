@@ -1,12 +1,5 @@
 # AppSync Resolvers
 
-[![GitHub release](https://img.shields.io/github/release/sbstjn/appsync-resolvers.svg?maxAge=600)](https://github.com/sbstjn/appsync-resolvers/releases)
-[![MIT License](https://img.shields.io/github/license/sbstjn/appsync-resolvers.svg?maxAge=600)](https://github.com/sbstjn/appsync-resolvers/blob/master/LICENSE.md)
-[![GoDoc](https://godoc.org/github.com/sbstjn/appsync-resolvers?status.svg)](https://godoc.org/github.com/sbstjn/appsync-resolvers)
-[![Go Report Card](https://goreportcard.com/badge/github.com/sbstjn/appsync-resolvers)](https://goreportcard.com/report/github.com/sbstjn/appsync-resolvers)
-[![Build Status](https://img.shields.io/circleci/project/sbstjn/appsync-resolvers.svg?maxAge=600)](https://circleci.com/gh/sbstjn/appsync-resolvers)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/15865020bd41ffedebdc/test_coverage)](https://codeclimate.com/github/sbstjn/appsync-resolvers/test_coverage)
-
 > Easily create AWS AppSync resolvers with AWS Lambda using Go. See [appsync-resolvers-example] for an example project with custon `Field` and `Query` resolvers and how to set up, maintain, and deploy a working GraphQL API using the [Serverless Application Model] and without any third-party frameworks.
 
 ## Usage

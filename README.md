@@ -21,15 +21,15 @@ type personArguments struct {
     ID int `json:"id"`
 }
 
-func resolvePeople() (interface{}, error) {
+func resolvePeople() (people, error) {
     return dataPeople, nil
 }
 
-func resolvePerson(p personArguments) (interface{}, error) {
+func resolvePerson(p personArguments) (*person, error) {
     return dataPeople.byID(p.ID)
 }
 
-func resolveFriends(p person) (interface{}, error) {
+func resolveFriends(p person) (people, error) {
     return p.getFriends()
 }
 

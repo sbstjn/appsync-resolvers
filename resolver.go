@@ -2,7 +2,6 @@ package resolvers
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 )
 
@@ -10,29 +9,24 @@ type resolver struct {
 	function interface{}
 }
 
-func (h *resolver) prepare(payload json.RawMessage) ([]reflect.Value, error) {
-	if reflect.TypeOf(h.function).NumIn() == 0 {
-		return nil, nil
-	}
-
-	argsType := reflect.TypeOf(h.function).In(0)
-	args := reflect.New(argsType)
-
-	if err := json.Unmarshal(payload, args.Interface()); err != nil {
-		return nil, fmt.Errorf("Unable to prepare payload: %s", err.Error())
-	}
-
-	return append([]reflect.Value{}, args.Elem()), nil
+func (r *resolver) hasArguments() bool {
+	return reflect.TypeOf(r.function).NumIn() == 1
 }
 
-func (h *resolver) call(payload json.RawMessage) (interface{}, error) {
-	args, err := h.prepare(payload)
+func (r *resolver) call(p json.RawMessage) (interface{}, error) {
+	var args []reflect.Value
+	var err error
 
-	if err != nil {
-		return nil, err
+	if r.hasArguments() {
+		pld := payload{p}
+		args, err = pld.parse(reflect.TypeOf(r.function).In(0))
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	returnValues := reflect.ValueOf(h.function).Call(args)
+	returnValues := reflect.ValueOf(r.function).Call(args)
 	var returnData interface{}
 	var returnError error
 
@@ -41,14 +35,8 @@ func (h *resolver) call(payload json.RawMessage) (interface{}, error) {
 	}
 
 	if err := returnValues[len(returnValues)-1].Interface(); err != nil {
-		returnError = err.(error)
+		returnError = returnValues[len(returnValues)-1].Interface().(error)
 	}
 
 	return returnData, returnError
-}
-
-func (h resolver) validate() error {
-	handler := reflect.TypeOf(h.function)
-
-	return validators.run(handler)
 }

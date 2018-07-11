@@ -3,29 +3,35 @@ package resolvers
 import (
 	"errors"
 	"reflect"
-	"testing"
 
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestValidatorListError(t *testing.T) {
-	list := validateList{
-		func(handler reflect.Type) error {
-			return errors.New("Failed")
-		},
-	}
-
+var _ = Describe("Validate", func() {
 	var item reflect.Type
-	assert.Error(t, list.run(item))
-}
 
-func TestValidatorListValid(t *testing.T) {
-	list := validateList{
-		func(handler reflect.Type) error {
-			return nil
-		},
-	}
+	Context("Fail validation", func() {
+		list := validateList{
+			func(handler reflect.Type) error {
+				return errors.New("Failed")
+			},
+		}
 
-	var item reflect.Type
-	assert.Nil(t, list.run(item))
-}
+		It("should err", func() {
+			Expect(list.run(item)).To(HaveOccurred())
+		})
+	})
+
+	Context("Pass validation", func() {
+		list := validateList{
+			func(handler reflect.Type) error {
+				return nil
+			},
+		}
+
+		It("should not err", func() {
+			Expect(list.run(item)).NotTo(HaveOccurred())
+		})
+	})
+})

@@ -1,5 +1,6 @@
 # AppSync GraphQL Resolvers w/ Go in AWS Lambda
 
+[![Current Release](https://badgen.now.sh/github/release/sbstjn/appsync-resolvers)](https://github.com/sbstjn/appsync-resolvers/releases)
 [![MIT License](https://badgen.now.sh/badge/License/MIT/blue)](https://github.com/sbstjn/appsync-resolvers/blob/master/LICENSE.md)
 [![Read Tutorial](https://badgen.now.sh/badge/Read/Tutorial/orange)](https://sbstjn.com/serverless-graphql-with-appsync-and-lambda.html)
 [![Code Example](https://badgen.now.sh/badge/Code/Example/cyan)](https://github.com/sbstjn/appsync-resolvers-example)

@@ -5,6 +5,7 @@ import "encoding/json"
 type context struct {
 	Arguments json.RawMessage `json:"arguments"`
 	Source    json.RawMessage `json:"source"`
+	Identity  *json.RawMessage `json:"identity"`
 }
 
 type invocation struct {
@@ -22,4 +23,8 @@ func (in invocation) payload() json.RawMessage {
 	}
 
 	return in.Context.Source
+}
+
+func (in invocation) identity() *json.RawMessage {
+	return in.Context.Identity
 }

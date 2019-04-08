@@ -10,20 +10,34 @@ type resolver struct {
 }
 
 func (r *resolver) hasArguments() bool {
-	return reflect.TypeOf(r.function).NumIn() == 1
+	return reflect.TypeOf(r.function).NumIn() >= 1
 }
 
-func (r *resolver) call(p json.RawMessage) (interface{}, error) {
+func (r *resolver) hasIdentity() bool {
+	return reflect.TypeOf(r.function).NumIn() >= 2
+}
+
+func (r *resolver) call(p json.RawMessage, i *json.RawMessage) (interface{}, error) {
 	var args []reflect.Value
-	var err error
 
 	if r.hasArguments() {
 		pld := payload{p}
-		args, err = pld.parse(reflect.TypeOf(r.function).In(0))
+		arguments, err := pld.parse(reflect.TypeOf(r.function).In(0))
 
 		if err != nil {
 			return nil, err
 		}
+		args = append(args, *arguments)
+	}
+
+	if r.hasIdentity() && i != nil {
+		idt := payload{*i}
+		identity, err := idt.parse(reflect.TypeOf(r.function).In(1))
+
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, *identity)
 	}
 
 	returnValues := reflect.ValueOf(r.function).Call(args)

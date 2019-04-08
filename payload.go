@@ -10,12 +10,13 @@ type payload struct {
 	Message json.RawMessage
 }
 
-func (p payload) parse(argsType reflect.Type) ([]reflect.Value, error) {
+func (p payload) parse(argsType reflect.Type) (*reflect.Value, error) {
 	args := reflect.New(argsType)
 
 	if err := json.Unmarshal(p.Message, args.Interface()); err != nil {
 		return nil, fmt.Errorf("Unable to prepare payload: %s", err.Error())
 	}
 
-	return append([]reflect.Value{}, args.Elem()), nil
+	e := args.Elem()
+	return &e, nil
 }

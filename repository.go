@@ -24,7 +24,7 @@ func (r Repository) Handle(in invocation) (interface{}, error) {
 	handler, found := r[in.Resolve]
 
 	if found {
-		return handler.call(in.payload())
+		return handler.call(in.payload(), in.identity())
 	}
 
 	return nil, fmt.Errorf("No resolver found: %s", in.Resolve)

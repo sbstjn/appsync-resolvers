@@ -12,11 +12,15 @@ var _ = Describe("Repository", func() {
 	type arguments struct {
 		Bar string `json:"bar"`
 	}
+	type identity struct {
+		Bar string `json:"bar"`
+	}
 	type response struct {
 		Foo string
 	}
 	r := New()
 	r.Add("example.resolver", func(arg arguments) (response, error) { return response{"bar"}, nil })
+	r.Add("example.resolver.with.identity", func(arg arguments, ident identity) (response, error) { return response{"foo"}, nil })
 	r.Add("example.resolver.with.error", func(arg arguments) (response, error) { return response{"bar"}, errors.New("Has Error") })
 
 	Context("Matching invocation", func() {
@@ -33,6 +37,25 @@ var _ = Describe("Repository", func() {
 
 		It("Should have data", func() {
 			Expect(res.(response).Foo).To(Equal("bar"))
+		})
+	})
+
+	Context("Matching invocation with identity", func() {
+		identityMessage := json.RawMessage(`{"bar":"foo"}`)
+		res, err := r.Handle(invocation{
+			Resolve: "example.resolver.with.identity",
+			Context: context{
+				Arguments: json.RawMessage(`{"bar":"foo"}`),
+				Identity:  &identityMessage,
+			},
+		})
+
+		It("Should not error", func() {
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("Should have data", func() {
+			Expect(res.(response).Foo).To(Equal("foo"))
 		})
 	})
 

@@ -22,6 +22,7 @@ var _ = Describe("Repository", func() {
 	r.Add("example.resolver", func(arg arguments) (response, error) { return response{"bar"}, nil })
 	r.Add("example.resolver.with.identity", func(arg arguments, ident identity) (response, error) { return response{"foo"}, nil })
 	r.Add("example.resolver.with.error", func(arg arguments) (response, error) { return response{"bar"}, errors.New("Has Error") })
+	r.Add("example.resolver.with.identity.with.error", func(arg arguments, ident identity) (response, error) { return response{"foo"}, errors.New("Has Error") })
 
 	Context("Matching invocation", func() {
 		res, err := r.Handle(invocation{
@@ -64,6 +65,21 @@ var _ = Describe("Repository", func() {
 			Resolve: "example.resolver.with.error",
 			Context: context{
 				Arguments: json.RawMessage(`{"bar":"foo"}`),
+			},
+		})
+
+		It("Should error", func() {
+			Expect(err).To(HaveOccurred())
+		})
+	})
+
+	Context("Matching invocation with identity and error", func() {
+		identityMessage := json.RawMessage(`{"bar:foo"}`)
+		_, err := r.Handle(invocation{
+			Resolve: "example.resolver.with.identity.with.error",
+			Context: context{
+				Arguments: json.RawMessage(`{"bar":"foo"}`),
+				Identity:  &identityMessage,
 			},
 		})
 

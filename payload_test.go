@@ -42,13 +42,12 @@ var _ = Describe("Payload", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		It("should return struct", func() {
+		It("should return data", func() {
 			Expect(args).NotTo(BeNil())
 		})
 
 		It("should parse data", func() {
-			Expect(args).To(HaveLen(1))
-			Expect(args[0].FieldByName("Name").String()).To(Equal("example"))
+			Expect(args.FieldByName("Name").String()).To(Equal("example"))
 		})
 	})
 })

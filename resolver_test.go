@@ -22,7 +22,7 @@ var _ = Describe("Resolver", func() {
 		Entry("Not a function, but string", "123", "Resolver is not a function, got string"),
 
 		Entry("Parameter is string", func(args string) (interface{}, error) { return nil, nil }, "Resolver argument must be struct"),
-		Entry("Too many parameters", func(args struct{}, foo struct{}) (interface{}, error) { return nil, nil }, "Resolver must not have more than one argument, got 2"),
+		Entry("Too many parameters", func(args struct{}, identity struct{}, foo struct{}) (interface{}, error) { return nil, nil }, "Resolver must not have more than two argument, got 3"),
 
 		Entry("No return value", func() {}, "Resolver must have at least one return value"),
 		Entry("Non-error return value", func(args struct{}) interface{} { return nil }, "Last return value must be an error"),

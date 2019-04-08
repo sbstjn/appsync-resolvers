@@ -3,8 +3,8 @@ package resolvers
 import "encoding/json"
 
 type context struct {
-	Arguments json.RawMessage `json:"arguments"`
-	Source    json.RawMessage `json:"source"`
+	Arguments json.RawMessage  `json:"arguments"`
+	Source    json.RawMessage  `json:"source"`
 	Identity  *json.RawMessage `json:"identity"`
 }
 

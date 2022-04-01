@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 )
 
@@ -23,8 +24,9 @@ func (r Repository) Add(resolve string, handler interface{}) error {
 func (r Repository) Handle(in invocation) (interface{}, error) {
 	handler, found := r[in.Resolve]
 
+	log.Printf("calling handler with arguments: %v\n", in)
 	if found {
-		return handler.call(in.payload())
+		return handler.call(in.payload(), in.identity())
 	}
 
 	return nil, fmt.Errorf("No resolver found: %s", in.Resolve)

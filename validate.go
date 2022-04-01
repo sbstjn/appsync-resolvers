@@ -28,8 +28,8 @@ var validators = validateList{
 		return nil
 	},
 	func(h reflect.Type) error {
-		if num := h.NumIn(); num > 1 {
-			return fmt.Errorf("Resolver must not have more than one argument, got %v", num)
+		if num := h.NumIn(); num > 2 {
+			return fmt.Errorf("Resolver must not have more than two argument, got %v", num)
 		}
 
 		return nil

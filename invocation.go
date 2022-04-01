@@ -8,12 +8,17 @@ type context struct {
 }
 
 type invocation struct {
-	Resolve string  `json:"resolve"`
-	Context context `json:"context"`
+	Resolve  string  `json:"resolve"`
+	Context  context `json:"context"`
+	Identity string  `json:"identity"`
 }
 
 func (in invocation) isRoot() bool {
 	return in.Context.Source == nil || string(in.Context.Source) == "null"
+}
+
+func (in invocation) identity() string {
+	return in.Identity
 }
 
 func (in invocation) payload() json.RawMessage {
